@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Komodo Hub - 印尼濒危物种保护平台</title>
+    <!-- 引入 Bootstrap 样式（修复原代码中 CSS 链接重复的问题） -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary-color: #2E8B57; /* 主色调：科莫多基金会绿色 */
+            --text-color: #333;
+            --light-bg: #fafafa;
+            --gray-text: #666;
+            --border-color: #ddd;
+            --card-shadow: 0 3px 8px rgba(0,0,0,0.08);
+        }
+
+        /* 1. 全局基础样式 */
+        body {
+            background-color: #f9f9f9;
+            color: var(--text-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        .btn-primary:hover {
+            background-color: #236b42; /* 加深主色调，提升 hover 辨识度 */
+            border-color: #236b42;
+        }
+        .btn-outline-secondary:hover {
+            background-color: #f0f7f2;
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        /* 2. 顶部区域：品牌标题 + 右上角登录按钮（按第二个代码样式修改） */
+        .brand-title {
+            color: var(--primary-color);
+            font-weight: bold;
+            font-size: 3rem; /* 进一步放大标题 */
+            text-align: center;
+            margin: 1rem 0;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.8rem; /* 图标与文字间距 */
+        }
+        .brand-desc {
+            color: var(--gray-text);
+            font-weight: bold;
+            font-size: 1.3rem; /* 放大描述文本 */
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+        .login-btn {
+            font-size: 0.9rem;
+            padding: 0.375rem 0.5rem;
+            width: 100%;
+            margin-bottom: 0.5rem;
+        }
+        #login-info {
+            margin-top: 0.8rem;
+            font-size: 0.95rem;
+        }
+
+        /* 3. 页面导航路径（面包屑） */
+        .breadcrumbs {
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+            color: var(--gray-text);
+        }
+        .breadcrumbs a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        .breadcrumbs a:hover {
+            text-decoration: underline;
+        }
+
+        /* 4. 知识库通用样式 */
+        .library-header {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        .library-header h2 {
+            color: var(--primary-color);
+            margin-bottom: 0.8rem;
+            font-weight: 600;
+        }
+        .library-header p {
+            color: var(--gray-text);
+            font-size: 1.05rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .library-tabs {
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+        }
+        .library-tab {
+            padding: 0.7rem 1.5rem;
+            color: var(--gray-text);
+            text-decoration: none;
+            border-bottom: 3px solid transparent;
+            font-size: 1.05rem;
+            transition: all 0.2s;
+        }
+        .library-tab:hover {
+            color: var(--primary-color);
+            border-bottom-color: #e0e0e0;
+        }
+        .library-tab.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+            font-weight: 500;
+        }
+        .resource-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 1.2rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--card-shadow);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .resource-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 12px rgba(0,0,0,0.1); /* 增强 hover 阴影 */
+        }
+        .resource-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.8rem;
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+        .resource-meta {
+            color: var(--gray-text);
+            font-size: 0.9rem;
+            margin-bottom: 0.8rem;
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap; /* 适配小屏幕，避免溢出 */
+        }
+        .resource-meta i {
+            margin-right: 0.3rem;
+            color: var(--primary-color);
+        }
+
+        /* 5. 濒危物种知识库专属样式 */
+        .species-filter {
+            margin-bottom: 1.5rem;
+            display: flex;
+            justify-content: center; /* 筛选按钮居中 */
+        }
+        .species-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .species-card {
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            transition: transform 0.2s;
+        }
+        .species-card:hover {
+            transform: translateY(-3px);
+        }
+        .species-img {
+            height: 180px;
+            background-color: #e8f4ea; /* 淡绿色背景，呼应主色调 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-color);
+            font-size: 3rem;
+        }
+        .species-info {
+            padding: 1.2rem;
+        }
+        .species-status {
+            display: inline-block;
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            margin-bottom: 0.8rem;
+            font-weight: 500;
+        }
+        .status-critical {
+            background-color: #ffebee;
+            color: #c62828; /* 极危：红色系 */
+        }
+        .status-endangered {
+            background-color: #fff3e0;
+            color: #ef6c00; /* 濒危：橙色系 */
+        }
+        .status-vulnerable {
+            background-color: #e8f5e9;
+            color: var(--primary-color); /* 易危：主色调绿色 */
+        }
+
+        /* 6. 保护现状统计卡片 */
+        .stats-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 2rem;
+        }
+        .stats-card h3 {
+            color: var(--primary-color);
+            margin-bottom: 1.2rem;
+            font-weight: 600;
+        }
+        .stats-item {
+            padding: 1.2rem;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            text-align: center;
+            height: 100%; /* 确保统计项高度一致 */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .stats-item h4 {
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+        .stats-item .display-6 {
+            font-size: 2rem;
+            margin-bottom: 0.3rem;
+        }
+        .stats-item .text-sm {
+            color: var(--gray-text);
+        }
+
+        /* 7. 返回首页按钮 */
+        .back-home {
+            text-align: center;
+            margin: 2.5rem 0 1.5rem;
+        }
+        .back-home .btn {
+            padding: 0.5rem 1.5rem;
+            font-size: 1.05rem;
+        }
+
+        /* 8. 页脚样式 */
+        .footer {
+            color: var(--gray-text);
+            font-size: 0.9rem;
+            text-align: center;
+            padding: 1.5rem 0;
+            margin-top: 3rem;
+            border-top: 1px solid var(--border-color);
+            background-color: white;
+        }
+
+        /* 9. 响应式适配（全场景覆盖） */
+        @media (max-width: 992px) {
+            .brand-title {
+                font-size: 2.4rem;
+            }
+        }
+        @media (max-width: 768px) {
+            .brand-title {
+                font-size: 2rem;
+                margin-bottom: 1rem;
+            }
+            .brand-desc {
+                font-size: 1.1rem;
+            }
+            .login-buttons {
+                text-align: center;
+                justify-content: center;
+                margin-top: 1rem;
+            }
+            .species-grid {
+                grid-template-columns: 1fr; /* 小屏幕：物种卡片垂直排列 */
+            }
+            .library-tab {
+                padding: 0.7rem 1rem;
+                font-size: 1rem;
+            }
+            .resource-meta {
+                gap: 1rem;
+            }
+        }
+        @media (max-width: 576px) {
+            .brand-title {
+                font-size: 1.8rem;
+            }
+            .brand-desc {
+                font-size: 1rem;
+            }
+            .login-btn {
+                font-size: 0.85rem;
+                padding: 0.3rem 0.5rem;
+            }
+            .library-header h2 {
+                font-size: 1.5rem;
+            }
+            .stats-item .display-6 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部区域：品牌标题 + 右上角登录按钮（按第二个代码样式修改） -->
+    <div class="container mt-4">
+        <div class="row align-items-center">
+            <!-- 左侧：品牌信息（居中放大） -->
+            <div class="col-md-8 offset-md-2"> <!-- 水平居中：通过offset实现 -->
+                <h1 class="brand-title">
+                    <i class="bi bi-dragon"></i> Komodo Hub
+                </h1>
+                <p class="brand-desc">印尼濒危物种保护数字化社区平台</p>
+            </div>
+            <!-- 右侧：并排缩小登录按钮 -->
+            <div class="col-md-2">
+                <div class="row gap-2 justify-content-end">
+                    <div class="col-auto">
+                        <button type="button" class="btn btn-outline-secondary login-btn" 
+                                onclick="showLoginInfo('school')">
+                            <i class="bi bi-building"></i> 学校登录
+                        </button>
+                    </div>
+                    <div class="col-auto">
+                        <button type="button" class="btn btn-outline-secondary login-btn"
+                                onclick="showLoginInfo('community')">
+                            <i class="bi bi-people"></i> 社区登录
+                        </button>
+                    </div>
+                </div>
+                <!-- 登录提示 -->
+                <div id="login-info" class="alert alert-info mt-2 d-none" role="alert"></div>
+            </div>
+        </div>
+        <hr class="my-4">
+    </div>
+
+    <!-- 主内容区 -->
+    <div class="container">
+        <!-- 页面导航路径（面包屑） -->
+        <div class="breadcrumbs">
+            <a href="index.html"><i class="bi bi-house-door-fill me-1"></i> 首页</a> > 
+            <span id="current-path">公开知识库</span>
+        </div>
+
+        <!-- 公开知识库界面 -->
+        <div id="public-library-page">
+            <div class="library-header">
+                <h2>📚 公开知识库</h2>
+                <p>包含社区与学校公开分享的保护资源，助力公众了解物种保护知识，推动全民参与</p>
+            </div>
+
+            <!-- 知识库子标签（社区图书馆/学校图书馆） -->
+            <div class="library-tabs">
+                <a href="#community-library" class="library-tab active" onclick="showLibrary('community')">
+                    <i class="bi bi-people me-1"></i> 社区图书馆
+                </a>
+                <a href="#school-library" class="library-tab" onclick="showLibrary('school')">
+                    <i class="bi bi-building me-1"></i> 学校图书馆
+                </a>
+            </div>
+
+            <!-- 社区图书馆内容 -->
+            <div id="community-library">
+                <div class="row">
+                    <!-- 社区资源卡片1：爪哇犀牛保护手册 -->
+                    <div class="col-md-6">
+                        <div class="resource-card">
+                            <h3>爪哇犀牛保护手册（2024最新版）</h3>
+                            <div class="resource-meta">
+                                <span><i class="bi bi-people"></i> #SaveOurAnimals社区</span>
+                                <span><i class="bi bi-calendar"></i> 2024-05-10</span>
+                                <span><i class="bi bi-eye"></i> 1,248次浏览</span>
+                            </div>
+                            <p>详细介绍爪哇犀牛的生活习性、现存数量（约70-80只）、主要威胁因素，以及社区可参与的保护行动（如红外相机监测、反盗猎巡逻）。附乌戎库隆国家公园犀牛分布图及监测点位置标注。</p>
+                            <a href="#" class="btn btn-primary btn-sm">查看完整内容</a>
+                        </div>
+                    </div>
+
+                    <!-- 社区资源卡片2：苏门答腊象人象冲突解决方案 -->
+                    <div class="col-md-6">
+                        <div class="resource-card">
+                            <h3>苏门答腊象人象冲突解决方案集</h3>
+                            <div class="resource-meta">
+                                <span><i class="bi bi-people"></i> 苏门答腊保护联盟</span>
+                                <span><i class="bi bi-calendar"></i> 2024-04-22</span>
+                                <span><i class="bi bi-eye"></i> 956次浏览</span>
+                            </div>
+                            <p>收集12个社区成功缓解人象冲突的案例，包括驱避植物种植（露兜树、香茅）、太阳能围栏安装、生态补偿机制等实操方案，附材料清单、成本预算表及供应商联系方式。</p>
+                            <a href="#" class="btn btn-primary btn-sm">查看完整内容</a>
+                        </div>
+                    </div>
+
+                    <!-- 社区资源卡片3：濒危物种监测指南 -->
+                    <div class="col-md-6">
+                        <div class="resource-card">
+                            <h3>社区参与濒危物种监测指南</h3>
+                            <div class="resource-meta">
+                                <span><i class="bi bi-people"></i> 印尼东部保护网络</span>
+                                <span><i class="bi bi-calendar"></i> 2024-03-15</span>
+                                <span><i class="bi bi-eye"></i> 782次浏览</span>
+                            </div>
+                            <p>面向普通社区成员的入门指南，讲解如何正确记录物种目击信息（时间、地点、行为）、拍摄合格的物种照片（清晰捕捉特征）、通过平台提交数据，以及个人信息与数据隐私保护说明。</p>
+                            <a href="#" class="btn btn-primary btn-sm">查看完整内容</a>
+                        </div>
+                    </div>
+
+                    <!-- 社区资源卡片4：巴厘岛八哥巢箱搭建 -->
+                    <div class="col-md-6">
+                        <div class="resource-card">
+                            <h3>巴厘岛八哥人工巢箱搭建教程</h3>
+                            <div class="resource-meta">
+                                <span><i class="bi bi-people"></i> 巴厘岛鸟类保护社区</span>
+                                <span><i class="bi bi-calendar"></i> 2024-02-28</span>
+                                <span><i class="bi bi-eye"></i> 635次浏览</span>
+                            </div>
+                            <p>针对巴厘岛八哥栖息地减少问题，提供简易巢箱的制作图纸（A3打印版）、材料选择（防腐木材、不锈钢钉子）、安装位置指南（离地面3-5米，避风雨），以及巢箱维护周期建议（每3个月检查一次）。</p>
+                            <a href="#" class="btn btn-primary btn-sm">查看完整内容</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 学校图书馆内容（默认隐藏） -->
+            <div id="school-library" style="display: none;">
+                <div class="row">
+                    <!-- 学校资源卡片1：乌戎拉亚小学绘画集 -->
+                    <div class="col-md-6">
+                        <div class="resource-card">
+                            <h3>乌戎拉亚小学濒危物种绘画集</h3>
+                            <div class="resource-meta">
+                                <span><i class="bi bi-building"></i> 乌戎拉亚小学（爪哇岛）</span>
+                                <span><i class="bi bi-calendar"></i> 2024-06-01</span>
+                                <span><i class="bi bi-eye"></i> 1,562次浏览</span>
+                            </div>
+                            <p>收录3-6年级学生创作的28幅濒危物种绘画作品（爪哇犀牛、苏门答腊虎等），每幅作品附学生手写的物种保护寄语（如"请给犀牛一个家"），展现儿童视角下的生物多样性保护意识，可下载打印用于科普宣传。</p>
+                            <a href="#" class="btn btn-primary btn-sm">查看完整内容</a>
+                        </div>
+                    </div>
+
+                    <!-- 学校资源卡片2：中学保护生物学实验手册 -->
+                    <div class="col-md-6">
+                        <div class="resource-card">
+                            <h3>中学保护生物学实验手册</h3>
+                            <div class="resource-meta">
+                                <span><i class="bi bi-building"></i> 苏门答腊环保示范中学</span>
+                                <span><i class="bi bi-calendar"></i> 2024-05-15</span>
+                                <span><i class="bi bi-eye"></i> 897次浏览</span>
+                            </div>
+                            <p>适合初中生物课程的12个保护实验设计，包括"校园鸟类多样性调查""微塑料对水生生物的影响模拟""植物种子传播与栖息地关联"等，附实验报告模板、数据分析指南及教师评估标准。</p>
+                            <a href="#" class="btn btn-primary btn-sm">查看完整内容</a>
+                        </div>
+                    </div>
+
+                    <!-- 学校资源卡片3：小学生科普手册 -->
+                    <div class="col-md-6">
+                        <div class="resource-card">
+                            <h3>小学生物种保护科普手册</h3>
+                            <div class="resource-meta">
+                                <span><i class="bi bi-building"></i> 巴厘岛乌布小学</span>
+                                <span><i class="bi bi-calendar"></i> 2024-04-01</span>
+                                <span><i class="bi bi-eye"></i> 1,123次浏览</span>
+                            </div>
+                            <p>图文并茂的儿童科普读物（适合6-10岁），用简单语言介绍印尼5种濒危物种的生活习性，搭配互动小游戏（找不同、填色、物种配对），附录"家庭保护行动清单"（如节约用电、拒绝野生动物制品）。</p>
+                            <a href="#" class="btn btn-primary btn-sm">查看完整内容</a>
+                        </div>
+                    </div>
+
+                    <!-- 学校资源卡片4：高中保护项目成果集 -->
+                    <div class="col-md-6">
+                        <div class="resource-card">
+                            <h3>高中保护项目成果集（2023）</h3>
+                            <div class="resource-meta">
+                                <span><i class="bi bi-building"></i> 雅加达国际学校</span>
+                                <span><i class="bi bi-calendar"></i> 2024-01-20</span>
+                                <span><i class="bi bi-eye"></i> 754次浏览</span>
+                            </div>
+                            <p>收录高中学生团队完成的6个保护项目报告，包括"城市绿地对鸟类多样性的影响""社区垃圾分类与海洋塑料污染缓解""校园濒危植物迁地保护实验"等，附数据图表、实地照片与面向政府的建议方案。</p>
+                            <a href="#" class="btn btn-primary btn-sm">查看完整内容</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 濒危物种知识库界面（默认隐藏） -->
+        <div id="endangered-species-page" style="display: none;">
+            <div class="library-header">
+                <h2>🐾 濒危物种知识库</h2>
+                <p>印尼濒危物种详细数据与保护现状，基于2018-2020年印尼中央统计局（Badan Pusat Statistik）权威调查统计</p>
+            </div>
+
+            <!-- 物种分类筛选 -->
+            <div class="species-filter">
+                <div class="btn-group" role="group" aria-label="物种分类筛选">
+                    <button type="button" class="btn btn-outline-primary active" onclick="filterSpecies('all')">全部物种</button>
+                    <button type="button" class="btn btn-outline-primary" onclick="filterSpecies('mammal')">哺乳动物</button>
+                    <button type="button" class="btn btn-outline-primary" onclick="filterSpecies('bird')">鸟类</button>
+                    <button type="button" class="btn btn-outline-primary" onclick="filterSpecies('reptile')">爬行动物</button>
+                </div>
+            </div>
+
+            <!-- 物种卡片网格 -->
+            <div class="species-grid">
+                <!-- 物种1：爪哇犀牛（哺乳动物） -->
+                <div class="species-card" data-type="mammal">
+                    <div class="species-img">
+                        <i class="bi bi-cow"></i>
+                    </div>
+                    <div class="species-info">
+                        <span class="species-status status-critical">极危（CR）</span>
+                        <h3>爪哇犀牛</h3>
+                        <p><strong>学名：</strong>Rhinoceros sondaicus</p>
+                        <p><strong>现存数量：</strong>约70-80只（仅分布于乌戎库隆国家公园）</p>
+                        <p><strong>主要威胁：</strong>栖息地丧失、盗猎（犀牛角非法贸易）</p>
+                        <a href="#" class="btn btn-primary btn-sm mt-2">查看详情</a>
+                    </div>
+                </div>
+
+                <!-- 物种2：苏门答腊虎（哺乳动物） -->
+                <div class="species-card" data-type="mammal">
+                    <div class="species-img">
+                        <i class="bi bi-paw"></i>
+                    </div>
+                    <div class="species-info">
+                        <span class="species-status status-critical">极危（CR）</span>
+                        <h3>苏门答腊虎</h3>
+                        <p><strong>学名：</strong>Panthera tigris sumatrae</p>
+                        <p><strong>现存数量：</strong>约80-90只（苏门答腊岛森林）</p>
+                        <p><strong>主要威胁：</strong>栖息地碎片化、非法捕猎（虎皮、虎骨贸易）</p>
+                        <a href="#" class="btn btn-primary btn-sm mt-2">查看详情</a>
+                    </div>
+                </div>
+
+                <!-- 物种3：巴厘岛八哥（鸟类） -->
+                <div class="species-card" data-type="bird">
+                    <div class="species-img">
+                        <i class="bi bi-bird"></i>
+                    </div>
+                    <div class="species-info">
+                        <span class="species-status status-endangered">濒危（EN）</span>
+                        <h3>巴厘岛八哥</h3>
+                        <p><strong>学名：</strong>Leucopsar rothschildi</p>
+                        <p><strong>现存数量：</strong>约1,000-2,500只（巴厘岛）</p>
+                        <p><strong>主要威胁：</strong>非法宠物贸易、栖息地减少（稻田城市化）</p>
+                        <a href="#" class="btn btn-primary btn-sm mt-2">查看详情</a>
+                    </div>
+                </div>
+
+                <!-- 物种4：科莫多龙（爬行动物） -->
+                <div class="species-card" data-type="reptile">
+                    <div class="species-img">
+                        <i class="bi bi-dragon"></i>
+                    </div>
+                    <div class="species-info">
+                        <span class="species-status status-endangered">濒危（EN）</span>
+                        <h3>科莫多龙</h3>
+                        <p><strong>学名：</strong>Varanus komodoensis</p>
+                        <p><strong>现存数量：</strong>约3,000-5,000只（努沙登加拉群岛）</p>
+                        <p><strong>主要威胁：</strong>气候变化（海平面上升）、栖息地丧失</p>
+                        <a href="#" class="btn btn-primary btn-sm mt-2">查看详情</a>
+                    </div>
+                </div>
+
+                <!-- 物种5：苏门答腊象（哺乳动物） -->
+                <div class="species-card" data-type="mammal">
+                    <div class="species-img">
+                        <i class="bi bi-emoji-smile"></i>
+                    </div>
+                    <div class="species-info">
+                        <span class="species-status status-critical">极危（CR）</span>
+                        <h3>苏门答腊象</h3>
+                        <p><strong>学名：</strong>Elephas maximus sumatranus</p>
+                        <p><strong>现存数量：</strong>约1,700头（苏门答腊岛）</p>
+                        <p><strong>主要威胁：</strong>棕榈种植园扩张、人象冲突（作物受损）</p>
+                        <a href="#" class="btn btn-primary btn-sm mt-2">查看详情</a>
+                    </div>
+                </div>
+
+                <!-- 物种6：爪哇鹰（鸟类） -->
+                <div class="species-card" data-type="bird">
+                    <div class="species-img">
+                        <i class="bi bi-arrow-up-right"></i>
+                    </div>
+                    <div class="species-info">
+                        <span class="species-status status-endangered">濒危（EN）</span>
+                        <h3>爪哇鹰</h3>
+                        <p><strong>学名：</strong>Spizaetus bartelsi</p>
+                        <p><strong>现存数量：</strong>约100-200对（爪哇岛森林）</p>
+                        <p><strong>主要威胁：</strong>栖息地破坏（非法伐木）、猎物减少</p>
+                        <a href="#" class="btn btn-primary btn-sm mt-2">查看详情</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 保护现状统计 -->
+            <div class="stats-card">
+                <h3>印尼濒危物种保护现状统计（2020）</h3>
+                <div class="row g-3 mt-3">
+                    <div class="col-md-4">
+                        <div class="stats-item">
+                            <h4 class="text-danger">极危物种</h4>
+                            <p class="display-6">14种</p>
+                            <p class="text-sm text-muted">较2018年新增2种（苏门答腊象、西里伯斯冠猕猴）</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stats-item">
+                            <h4 class="text-warning">濒危物种</h4>
+                            <p class="display-6">32种</p>
+                            <p class="text-sm text-muted">较2018年新增5种（巴厘岛八哥、爪哇鹰等）</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stats-item">
+                            <h4 class="text-primary">易危物种</h4>
+                            <p class="display-6">58种</p>
+                            <p class="text-sm text-muted">较2018年新增8种（科莫多龙、马来熊等）</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 返回首页按钮 -->
+        <div class="back-home">
+            <a href="index.html" class="btn btn-outline-primary">
+                <i class="bi bi-arrow-left me-1"></i> 返回首页
+            </a>
+        </div>
+    </div>
+
+    <!-- 页脚 -->
+    <div class="footer">
+        <div class="container">
+            <p>© 2024 Komodo Hub | 由 Yayasan Komodo（科莫多基金会）运营 | 保护印尼濒危物种，人人有责</p>
+            <p class="mt-1 text-sm">本平台内容仅用于教育与动物保护实践，所有模拟数据均参考印尼中央统计局公开报告</p>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS 依赖 -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 1. 页面加载时根据 URL 参数显示对应知识库页面
+        document.addEventListener('DOMContentLoaded', function() {
+            const params = new URLSearchParams(window.location.search);
+            const page = params.get('page');
+            
+            if (page === 'endangered') {
+                // 显示濒危物种知识库
+                document.getElementById('public-library-page').style.display = 'none';
+                document.getElementById('endangered-species-page').style.display = 'block';
+                document.getElementById('current-path').textContent = '濒危物种知识库';
+            } else {
+                // 默认显示公开知识库
+                document.getElementById('public-library-page').style.display = 'block';
+                document.getElementById('endangered-species-page').style.display = 'none';
+                document.getElementById('current-path').textContent = '公开知识库';
+            }
+        });
+
+        // 2. 切换社区/学校图书馆
+        function showLibrary(type) {
+            const communityLib = document.getElementById('community-library');
+            const schoolLib = document.getElementById('school-library');
+            const communityTab = document.querySelector('.library-tab[href="#community-library"]');
+            const schoolTab = document.querySelector('.library-tab[href="#school-library"]');
+
+            if (type === 'community') {
+                communityLib.style.display = 'block';
+                schoolLib.style.display = 'none';
+                communityTab.classList.add('active');
+                schoolTab.classList.remove('active');
+            } else {
+                communityLib.style.display = 'none';
+                schoolLib.style.display = 'block';
+                communityTab.classList.remove('active');
+                schoolTab.classList.add('active');
+            }
+        }
+
+        // 3. 筛选物种类型（哺乳动物/鸟类/爬行动物）
+        function filterSpecies(type) {
+            const cards = document.querySelectorAll('.species-card');
+            const buttons = document.querySelectorAll('.species-filter .btn');
+            
+            // 更新筛选按钮状态
+            buttons.forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`.species-filter .btn[onclick="filterSpecies('${type}')"]`).classList.add('active');
+            
+            // 筛选并显示对应类型的物种卡片
+            cards.forEach(card => {
+                if (type === 'all' || card.getAttribute('data-type') === type) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // 4. 登录提示函数（从第二个代码复制）
+        function showLoginInfo(type) {
+            const infoEl = document.getElementById('login-info');
+            if (type === 'school') {
+                infoEl.textContent = '学校登录：支持教师账号（工号登录）、学生账号（专属访问码+学号登录）';
+            } else {
+                infoEl.textContent = '社区登录：支持社区成员（手机号登录）、管理员（邮箱+密码登录）';
+            }
+            infoEl.classList.remove('d-none');
+            setTimeout(() => infoEl.classList.add('d-none'), 3500);
+        }
+    </script>
+</body>
+</html>

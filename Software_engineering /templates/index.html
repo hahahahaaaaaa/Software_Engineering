@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- 标题：居中放大（通过CSS控制页面标签栏显示，此处保持语义化命名） -->
+    <title>Komodo Hub - 印尼濒危物种保护平台</title>
+    <!-- 引入 Bootstrap 框架 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- 引入图标库 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <style>
+        /* 自定义样式：核心需求适配 + 视觉统一 */
+        :root {
+            --primary-color: #2E8B57; /* 主色调：原界面绿色 */
+            --text-color: #333;
+            --light-bg: #fafafa;
+            --gray-text: #666;
+            --border-color: #ddd;
+        }
+
+        /* 1. 页面标题（浏览器标签栏）：居中 + 放大（需浏览器支持，部分浏览器仅支持默认样式，此处增强兼容性） */
+        @supports (-webkit-app-region: drag) {
+            title {
+                display: block;
+                text-align: center;
+                font-size: 1.2rem;
+                font-weight: bold;
+            }
+        }
+
+        /* 2. 平台品牌标题（页面内）：强化居中与尺寸 */
+        .brand-title {
+            color: var(--primary-color);
+            font-weight: bold;
+            font-size: 3rem; /* 进一步放大标题 */
+            text-align: center;
+            margin: 1rem 0;
+            letter-spacing: 0.5px;
+        }
+        .brand-desc {
+            color: var(--gray-text);
+            font-weight: bold;
+            font-size: 1.3rem; /* 放大描述文本 */
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        /* 3. 登录按钮：保持右上角并排缩小 */
+        .login-btn {
+            font-size: 0.9rem;
+            padding: 0.375rem 0.5rem;
+            width: 100%;
+        }
+
+        /* 4. 标签导航：保留网页式切换风格 */
+        .tab-nav {
+            background-color: var(--light-bg);
+            border-bottom: 1px solid var(--border-color);
+            padding: 0;
+            margin-bottom: 2rem;
+        }
+        .tab-link {
+            color: var(--text-color);
+            padding: 0.8rem 2rem; /* 增加标签内边距，提升点击体验 */
+            font-size: 1.05rem;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .tab-link:hover {
+            background-color: #e6f7ef;
+            color: var(--text-color);
+        }
+        .tab-link.active {
+            background-color: var(--primary-color);
+            color: white !important;
+            border-radius: 0;
+        }
+
+        /* 5. 知识库卡片：确保并排显示 + 统一高度 */
+        .resource-container {
+            display: flex;
+            gap: 2rem; /* 卡片间距 */
+            margin-bottom: 2rem;
+        }
+        .resource-card {
+            flex: 1; /* 两卡片等分宽度，实现严格并排 */
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 2rem;
+            height: 350px; /* 固定卡片高度，避免内容不一致导致错位 */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05); /* 增加轻微阴影，提升层次感 */
+        }
+        .resource-card h3 {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            margin-bottom: 1.2rem;
+            display: flex;
+            align-items: center;
+        }
+        .resource-card h3 i {
+            margin-right: 0.8rem;
+        }
+        .resource-card ul {
+            padding-left: 1.5rem;
+        }
+        .resource-card li {
+            margin-bottom: 0.8rem;
+            color: var(--text-color);
+        }
+
+        /* 6. 目击报告：优化折叠面板样式 */
+        .report-expander {
+            margin-bottom: 1.2rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .accordion-button {
+            font-weight: 500;
+        }
+        .accordion-body {
+            padding: 1.2rem 1.5rem;
+        }
+
+        /* 7. 提示框与页脚：统一样式 */
+        #login-info, #resource-success {
+            margin-top: 0.8rem;
+            font-size: 0.95rem;
+        }
+        .footer {
+            color: var(--gray-text);
+            font-size: 0.95rem;
+            text-align: center;
+            padding: 1.2rem 0;
+            margin-top: 3rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        /* 响应式适配：小屏幕下知识库卡片垂直排列 */
+        @media (max-width: 768px) {
+            .resource-container {
+                flex-direction: column; /* 小屏幕垂直堆叠 */
+                gap: 1.5rem;
+            }
+            .brand-title {
+                font-size: 2.2rem; /* 小屏幕缩小标题 */
+            }
+            .brand-desc {
+                font-size: 1.1rem;
+            }
+            .tab-link {
+                padding: 0.6rem 1.2rem;
+                font-size: 0.95rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <!-- 1. 顶部区域：品牌标题 + 右上角登录按钮 -->
+        <div class="row align-items-center">
+            <!-- 左侧：品牌信息（居中放大） -->
+            <div class="col-md-8 offset-md-2"> <!-- 水平居中：通过offset实现 -->
+                <h1 class="brand-title">
+                    <i class="bi bi-dragon"></i> Komodo Hub
+                </h1>
+                <p class="brand-desc">印尼濒危物种保护数字化社区平台</p>
+            </div>
+            <!-- 右侧：并排缩小登录按钮 -->
+            <div class="col-md-2">
+                <div class="row gap-2 justify-content-end">
+                    <div class="col-auto">
+                        <button type="button" class="btn btn-outline-secondary login-btn" 
+                                onclick="showLoginInfo('school')">
+                            <i class="bi bi-building"></i> 学校登录
+                        </button>
+                    </div>
+                    <div class="col-auto">
+                        <button type="button" class="btn btn-outline-secondary login-btn"
+                                onclick="showLoginInfo('community')">
+                            <i class="bi bi-people"></i> 社区登录
+                        </button>
+                    </div>
+                </div>
+                <!-- 登录提示 -->
+                <div id="login-info" class="alert alert-info mt-2 d-none" role="alert"></div>
+            </div>
+        </div>
+
+        <hr class="my-4">
+
+        <!-- 2. 网页式标签导航 -->
+        <ul class="nav tab-nav justify-content-center" id="myTab" role="tablist"> <!-- 标签导航居中 -->
+            <li class="nav-item" role="presentation">
+                <button class="nav-link tab-link active" id="non-registered-tab" 
+                        data-bs-toggle="tab" data-bs-target="#non-registered" 
+                        type="button" role="tab" aria-controls="non-registered" aria-selected="true">
+                    <i class="bi bi-person me-2"></i> 非注册用户资源
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link tab-link" id="community-tab" 
+                        data-bs-toggle="tab" data-bs-target="#community" 
+                        type="button" role="tab" aria-controls="community" aria-selected="false">
+                    <i class="bi bi-eye me-2"></i> 社区目击报告
+                </button>
+            </li>
+        </ul>
+
+        <!-- 3. 标签内容区域 -->
+        <div class="tab-content" id="myTabContent">
+            <!-- 3.1 非注册用户资源：知识库卡片并排 -->
+            <div class="tab-pane fade show active" id="non-registered" role="tabpanel" aria-labelledby="non-registered-tab">
+                <h2 style="color: var(--text-color); text-align: center; margin-bottom: 2rem;">公开保护资源</h2>
+                <p class="text-center mb-4" style="color: var(--gray-text);">无需注册即可访问以下资源，助力了解印尼濒危物种保护现状：</p>
+                
+                <!-- 核心：知识库卡片并排容器 -->
+                <div class="resource-container">
+                    <!-- 公开知识库卡片 -->
+                    <div class="resource-card">
+                        <h3><i class="bi bi-book"></i> 公开知识库</h3>
+                        <ul>
+                            <li>社区公开贡献的保护文章、实践案例</li>
+                            <li>学校分享的保护教育成果（不含学生隐私）</li>
+                            <li>印尼动物保护政策与最佳实践指南</li>
+                            <li>全国性保护项目进展与公众参与入口</li>
+                        </ul>
+                        <button class="btn btn-success w-100 mt-auto" onclick="showResourceSuccess('public')">
+                            进入公开知识库
+                        </button>
+                    </div>
+
+                    <!-- 濒危物种知识库卡片 -->
+                    <div class="resource-card">
+                        <h3><i class="bi bi-paw"></i> 濒危物种知识库</h3>
+                        <ul>
+                            <li>苏门答腊虎、爪哇犀牛等14种濒危物种数据</li>
+                            <li>2018-2020年物种数量统计与分布热力图</li>
+                            <li>栖息地丧失、污染等威胁因素深度分析</li>
+                            <li>专家制定的物种保护建议与行动手册</li>
+                        </ul>
+                        <button class="btn btn-success w-100 mt-auto" onclick="showResourceSuccess('endangered')">
+                            进入濒危物种知识库
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 资源访问提示 -->
+                <div id="resource-success" class="alert alert-success mt-4 d-none" role="alert"></div>
+            </div>
+
+            <!-- 3.2 社区目击报告界面 -->
+            <div class="tab-pane fade" id="community" role="tabpanel" aria-labelledby="community-tab">
+                <h2 style="color: var(--text-color); text-align: center; margin-bottom: 2rem;">社区濒危物种目击报告</h2>
+                <p class="text-center mb-4" style="color: var(--gray-text);">以下为各社区成员提交并审核通过的公开目击记录（非注册用户可浏览）：</p>
+                
+                <!-- 目击报告折叠面板 -->
+                <div class="accordion" id="reportAccordion">
+                    <!-- 报告1：爪哇犀牛 -->
+                    <div class="accordion-item report-expander">
+                        <h2 class="accordion-header" id="headingOne">
+                            <button class="accordion-button collapsed" type="button" 
+                                    data-bs-toggle="collapse" data-bs-target="#collapseOne" 
+                                    aria-expanded="false" aria-controls="collapseOne">
+                                <i class="bi bi-paw text-success me-2"></i> 爪哇犀牛（2024-06-15 · #SaveOurAnimals社区）
+                            </button>
+                        </h2>
+                        <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#reportAccordion">
+                            <div class="accordion-body">
+                                <p><strong>目击地点：</strong>乌戎库隆国家公园（爪哇犀牛核心保护区）</p>
+                                <p><strong>提交人：</strong>安达（社区成员，资深保护志愿者）</p>
+                                <p><strong>报告内容：</strong>今日上午9:30在公园西侧水源地发现1只成年雌性犀牛，携带1只约6个月大的幼崽，二者活动正常，无外伤或异常行为。已通过平台记录GPS坐标（-6.8824° S, 105.3107° E），并同步反馈至乌戎库隆国家公园管理处，建议加强该区域的巡逻频次，避免游客或非法人员干扰。</p>
+                                <p><strong>状态：</strong><span class="badge bg-success">✅ 已审核（社区管理员：巴古斯）</span></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 报告2：苏门答腊象 -->
+                    <div class="accordion-item report-expander">
+                        <h2 class="accordion-header" id="headingTwo">
+                            <button class="accordion-button collapsed" type="button" 
+                                    data-bs-toggle="collapse" data-bs-target="#collapseTwo" 
+                                    aria-expanded="false" aria-controls="collapseTwo">
+                                <i class="bi bi-paw text-success me-2"></i> 苏门答腊象（2024-06-10 · 苏门答腊保护联盟）
+                            </button>
+                        </h2>
+                        <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#reportAccordion">
+                            <div class="accordion-body">
+                                <p><strong>目击地点：</strong>廖内省丹戎普拉森林（靠近棕榈种植园区域）</p>
+                                <p><strong>提交人：</strong>巴古斯（社区管理员，红外相机监测负责人）</p>
+                                <p><strong>报告内容：</strong>通过布设的红外相机（编号IR-2024-058）于6月10日凌晨2:15拍摄到3头象群（1头成年雄性、2头成年雌性），周边发现少量棕榈作物受损痕迹（推测为象群觅食所致）。已协调社区志愿者与当地种植园主沟通，计划在森林与种植园边界种植象群不喜的驱避植物（如露兜树），减少人象冲突。</p>
+                                <p><strong>状态：</strong><span class="badge bg-success">✅ 已审核（社区督导：莱娜）</span></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 报告3：巴厘岛八哥 -->
+                    <div class="accordion-item report-expander">
+                        <h2 class="accordion-header" id="headingThree">
+                            <button class="accordion-button collapsed" type="button" 
+                                    data-bs-toggle="collapse" data-bs-target="#collapseThree" 
+                                    aria-expanded="false" aria-controls="collapseThree">
+                                <i class="bi bi-paw text-success me-2"></i> 巴厘岛八哥（2024-06-05 · 巴厘岛鸟类保护社区）
+                            </button>
+                        </h2>
+                        <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#reportAccordion">
+                            <div class="accordion-body">
+                                <p><strong>目击地点：</strong>巴厘岛乌布地区稻田边缘（靠近德格拉朗梯田）</p>
+                                <p><strong>提交人：</strong>莱娜（社区成员，鸟类摄影爱好者）</p>
+                                <p><strong>报告内容：</strong>在稻田边缘的相思树上发现5只巴厘岛八哥（3只成鸟、2只亚成鸟），观察到成鸟正在喂食亚成鸟，种群状态稳定。但需注意，近期周边农户为防治蝗虫频繁使用有机磷类农药（如毒死蜱），存在八哥误食中毒风险。已通过社区公众号呼吁农户改用生物防治方法（如释放寄生蜂），并在稻田周边设置鸟类饮水点。</p>
+                                <p><strong>状态：</strong><span class="badge bg-warning">⏳ 审核中（预计6月18日前完成）</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. 页脚 -->
+        <div class="footer">
+            <p>© 2024 Komodo Hub | 由 Yayasan Komodo（科莫多基金会）运营 | 保护印尼濒危物种，人人有责</p>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS 依赖 -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 登录提示函数
+        function showLoginInfo(type) {
+            const infoEl = document.getElementById('login-info');
+            if (type === 'school') {
+                infoEl.textContent = '学校登录：支持教师账号（工号登录）、学生账号（专属访问码+学号登录）';
+            } else {
+                infoEl.textContent = '社区登录：支持社区成员（手机号登录）、管理员（邮箱+密码登录）';
+            }
+            infoEl.classList.remove('d-none');
+            setTimeout(() => infoEl.classList.add('d-none'), 3500);
+        }
+
+        // 资源访问提示函数
+        function showResourceSuccess(type) {
+            const successEl = document.getElementById('resource-success');
+            if (type === 'public') {
+                successEl.textContent = '已进入公开知识库！当前热门内容：#SaveOurAnimals社区《爪哇犀牛保护手册（2024版）》、乌戎拉亚小学《濒危物种绘画集》';
+            } else {
+                successEl.textContent = '已进入濒危物种知识库！最新数据：苏门答腊虎现存约80-90只，爪哇犀牛现存约70-80只（2024年第一季度统计）';
+            }
+            successEl.classList.remove('d-none');
+            setTimeout(() => successEl.classList.add('d-none'), 4000);
+        }
+    </script>
+</body>
+</html>

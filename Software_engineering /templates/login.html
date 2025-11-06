@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+    <script src="http://code.jquery.com/jquery-latest.js"></script>
+    <title>登录</title>
+</head>
+<body>
+    <div class="box">
+        <div class="pre-box">
+            <h1>WELCOME</h1>
+            <div class="img-box">
+                <img src="{% static 'img/waoku.jpg' %}" alt="">
+            </div>
+        </div>
+        <div class="register-form">
+            <div class="title-box">
+                <h1>注册</h1>
+            </div>
+            {% if messages %}
+                <ul class="messages">
+                    {% for message in messages %}
+                        <li class="{{ message.tags }}">{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+            <form action="{% url 'register' %}" method="post">
+                {% csrf_token %}
+                <div class="input-box">
+                    <input type="text" name="username" placeholder="用户名">
+                    <input type="password" name="password" placeholder="密码">
+                    <input type="password" name="confirm_password" placeholder="确认密码">
+                    {% if form.non_field_errors %}
+                        <p class="error">{{ form.non_field_errors }}</p>
+                    {% endif %}
+                    {% for field in form %}
+                        {% for error in field.errors %}
+                            <p class="error">{{ error }}</p>
+                        {% endfor %}
+                    {% endfor %}
+                </div>
+                <div class="btn-box">
+                    <button type="submit">注册</button>
+                    <p onclick="mySwitch()">已有账号?去登录</p>
+                </div>
+            </form>
+        </div>
+        <div class="login-form">
+            <div class="title-box">
+                <h1>登录</h1>
+            </div>
+            <form action="{% url 'login' %}" method="post">
+                {% csrf_token %}
+                <div class="input-box">
+                    <input type="text" name="username" placeholder="用户名">
+                    <input type="password" name="password" placeholder="密码">
+                </div>
+                <div class="btn-box">
+                    <button type="submit">登录</button>
+                    <p onclick="mySwitch()" class="switch-link">没有账号?去注册</p>
+                </div>
+                <p onclick="goForget()" class="switch-link right-small">忘记密码</p>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let flag = true;
+
+        function goForget() {
+            window.location.href = '{% url 'forgetpassword' %}';
+        }
+
+        const mySwitch = () => {
+            if (flag) {
+                $(".pre-box").css("transform", "translateX(100%)");
+                $(".pre-box").css("background-color", "#c9e0ed");
+                $("img").attr("src", "{% static 'img/wuwu.jpeg' %}");
+            } else {
+                $(".pre-box").css("transform", "translateX(0%)");
+                $(".pre-box").css("background-color", "#edd4dc");
+                $("img").attr("src", "{% static 'img/waoku.jpg' %}");
+            }
+            flag = !flag;
+        }
+
+        const showAlertAndRefresh = (message) => {
+            alert(message);
+            location.reload();
+        }
+
+        {% if messages %}
+            {% for message in messages %}
+                {% if message.tags == 'error' %}
+                    showAlertAndRefresh("{{ message }}");
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    </script>
+    <script>
+        const bubleCreate = () => {
+            const body = document.body;
+            const buble = document.createElement('span');
+            let r = Math.random() * 5 + 25;
+
+            buble.style.width = r + 'px';
+            buble.style.height = r + 'px';
+            buble.style.left = Math.random() * innerWidth + 'px';
+
+            const noBubbleElements = document.querySelectorAll('.nobubble');
+            let isInsideNoBubbleElement = false;
+
+            noBubbleElements.forEach(element => {
+                const rect = element.getBoundingClientRect();
+                if (buble.style.left > rect.left && buble.style.left < rect.right) {
+                    isInsideNoBubbleElement = true;
+                }
+            });
+
+            if (!isInsideNoBubbleElement) {
+                body.append(buble);
+                setTimeout(() => {
+                    buble.remove();
+                }, 4000);
+            }
+        };
+
+        setInterval(() => {
+            bubleCreate();
+        }, 200);
+    </script>
+    <style>
+        .switch-link {
+            display: block;
+        }
+        .right-small {
+            color: white;
+            margin-left: 185px;
+            font-size: 12px;
+        }
+    </style>
+</body>
+</html>
